@@ -12,6 +12,41 @@ const currencyManager = require('./utils/currencyManager');
 const performanceTracker = require('./utils/performanceTracker');
 const readline = require('readline');
 
+// Load environment-specific configuration
+const NODE_ENV = process.env.NODE_ENV || 'development';
+const isProduction = NODE_ENV === 'production';
+
+// Load production config if in production mode
+if (isProduction) {
+  const productionConfig = require('./config/production');
+  
+  // Apply production settings
+  logger.setLogLevel(productionConfig.LOG_LEVEL);
+  logger.enableFileLogging(productionConfig.FILE_LOGGING);
+  logger.enableConsoleLogging(productionConfig.CONSOLE_LOGGING);
+  
+  logger.logInfo(`Starting bot in PRODUCTION mode`);
+} else {
+  logger.logInfo(`Starting bot in DEVELOPMENT mode`);
+}
+
+// Add health check if in production
+if (isProduction) {
+  const healthCheck = require('./utils/healthCheck');
+  const productionConfig = require('./config/production');
+  
+  if (productionConfig.ENABLE_HEALTH_CHECK) {
+    // Run health check at intervals
+    setInterval(async () => {
+      try {
+        await healthCheck.runCheck();
+      } catch (error) {
+        logger.logError('Health check error:', error);
+      }
+    }, productionConfig.HEALTH_CHECK_INTERVAL);
+  }
+}
+
 // Initialize performance.json if it doesn't exist or is invalid
 try {
   const performanceFilePath = path.join(__dirname, '../logs/performance.json');

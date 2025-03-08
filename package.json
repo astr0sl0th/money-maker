@@ -1,22 +1,29 @@
 {
   "name": "kraken-scalping-bot",
   "version": "1.0.0",
-  "description": "A scalping bot for Kraken cryptocurrency exchange",
+  "description": "Automated trading bot for Kraken exchange",
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
-    "dev": "nodemon src/index.js"
+    "start:prod": "NODE_ENV=production node src/index.js",
+    "start:pm2": "pm2 start src/index.js --name kraken-bot",
+    "stop:pm2": "pm2 stop kraken-bot",
+    "logs": "pm2 logs kraken-bot",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "chalk": "^4.1.2",
-    "dotenv": "^16.4.7",
+    "dotenv": "^16.0.3",
     "kraken-api": "^1.0.1",
     "technicalindicators": "^3.1.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"
+  },
+  "engines": {
+    "node": ">=14.0.0"
   }
 }
